@@ -1,13 +1,13 @@
-import Characters from './Characters'
+import Character from "./Character";
 
-import './App.css'
+import "./App.css";
 
 function App() {
   return (
     <div className="App">
-      <Characters />
+      <Character />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

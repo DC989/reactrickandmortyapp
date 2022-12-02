@@ -1,0 +1,7 @@
+.character img {
+  transition: transform 0.3s ease;
+}
+
+.character img:hover {
+  transform: scale(1.1);
+}
