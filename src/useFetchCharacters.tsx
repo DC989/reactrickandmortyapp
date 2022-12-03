@@ -34,11 +34,16 @@ const useFetchCharacters = (
   const [data, setData] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [hasMore, setHasMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
     setLoading(true);
     setError(null);
+
+    if (!hasMore) {
+      // if there is no more data to fetch, don't fetch
+      return;
+    }
 
     axios({
       method: "GET",
@@ -46,15 +51,19 @@ const useFetchCharacters = (
       params: { name: queryName, status: queryStatus, page: pageNumber },
     })
       .then((response) => {
+        if (response.data.info.next === null) {
+          setHasMore(false);
+        }
+
         if (pageNumber > 1) {
           setData((prevData) => {
             return [...prevData, ...response.data.results];
           });
         } else {
           setData(response.data.results);
-          setHasMore(response.data.results.length > 0);
-          setLoading(false);
         }
+
+        setLoading(false);
 
         console.log(response.data);
       })
@@ -68,7 +77,7 @@ const useFetchCharacters = (
       });
   }, [queryName, queryStatus, pageNumber]);
 
-  return { loading, data, error, hasMore };
+  return { loading, data, error, hasMore, setHasMore };
 };
 
 export default useFetchCharacters;

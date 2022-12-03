@@ -1,6 +1,8 @@
 import { useState } from "react";
 
 import { v4 as uuidv4 } from "uuid";
+import InfiniteScroll from "react-infinite-scroll-component";
+
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -17,7 +19,7 @@ function Character() {
   const [queryStatus, setQueryStatus] = useState("");
   const [pageNumber, setPageNumber] = useState(1);
 
-  const { loading, data, error, hasMore } = useFetchCharacters(
+  const { loading, data, error, hasMore, setHasMore } = useFetchCharacters(
     queryName,
     queryStatus,
     pageNumber
@@ -26,11 +28,17 @@ function Character() {
   function handleSearch(e: React.ChangeEvent<HTMLInputElement>) {
     setQueryName(e.target.value);
     setPageNumber(1);
+    setHasMore(true);
   }
 
   function handleCheck(e: React.ChangeEvent<HTMLInputElement>) {
     setQueryStatus(e.target.value);
     setPageNumber(1);
+    setHasMore(true);
+  }
+
+  function nextPage() {
+    setPageNumber((prevPageNumber) => prevPageNumber + 1);
   }
 
   return (
@@ -88,31 +96,38 @@ function Character() {
         </div>
       </Container>
       {data.length > 0 && (
-        <Container>
-          <Row>
-            {loading && (
-              <div>
-                <em>Characters are loading...</em>
-              </div>
-            )}
-            {data.map((character) => (
-              <Col key={uuidv4()} xs={12} sm={6} md={4} lg={3}>
-                <div className="character">
-                  <img
-                    style={{
-                      maxWidth: "100%",
-                    }}
-                    src={character.image}
-                    alt={character.name}
-                  />
-                  <h3 className="mt-3">{character.name}</h3>
-                  <p>{character.species}</p>
-                  <p>{character.status}</p>
-                </div>
-              </Col>
-            ))}
-          </Row>
-        </Container>
+        <InfiniteScroll
+          dataLength={data.length}
+          next={nextPage}
+          hasMore={hasMore}
+          loader={loading ? <h4>Loading...</h4> : null}
+          endMessage={
+            <p style={{ textAlign: "center" }}>
+              <b>Yay! You have seen it all</b>
+            </p>
+          }
+        >
+          <Container>
+            <Row>
+              {data.map((character) => (
+                <Col key={uuidv4()} xs={12} sm={6} md={4} lg={3}>
+                  <div className="character">
+                    <img
+                      style={{
+                        maxWidth: "100%",
+                      }}
+                      src={character.image}
+                      alt={character.name}
+                    />
+                    <h3 className="mt-3">{character.name}</h3>
+                    <p>{character.species}</p>
+                    <p>{character.status}</p>
+                  </div>
+                </Col>
+              ))}
+            </Row>
+          </Container>
+        </InfiniteScroll>
       )}
       {error && (
         <div>
