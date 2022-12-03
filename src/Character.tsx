@@ -1,4 +1,5 @@
 import { useState } from "react";
+import debounce from "lodash/debounce";
 
 import { v4 as uuidv4 } from "uuid";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -25,6 +26,8 @@ function Character() {
     pageNumber
   );
 
+  const debouncedHandleSearch = debounce(handleSearch, 400);
+
   function handleSearch(e: React.ChangeEvent<HTMLInputElement>) {
     setQueryName(e.target.value);
     setPageNumber(1);
@@ -47,7 +50,7 @@ function Character() {
         <InputGroup className="mb-3">
           <InputGroup.Text id="basic-addon1">Character</InputGroup.Text>
           <Form.Control
-            onChange={handleSearch}
+            onChange={debouncedHandleSearch}
             placeholder="Search"
             aria-label="Search"
             aria-describedby="basic-addon1"
