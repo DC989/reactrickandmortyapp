@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 
 import { v4 as uuidv4 } from "uuid";
 import Container from "react-bootstrap/Container";
@@ -17,23 +17,21 @@ function Character() {
   const [queryStatus, setQueryStatus] = useState("");
   const [pageNumber, setPageNumber] = useState(1);
 
-  const observer = useRef();
-
-  function handleSearch(e) {
-    setQueryName(e.target.value);
-    setPageNumber(1);
-  }
-
-  function handleCheck(e) {
-    setQueryStatus(e.target.value);
-    setPageNumber(1);
-  }
-
   const { loading, data, error, hasMore } = useFetchCharacters(
     queryName,
     queryStatus,
     pageNumber
   );
+
+  function handleSearch(e: React.ChangeEvent<HTMLInputElement>) {
+    setQueryName(e.target.value);
+    setPageNumber(1);
+  }
+
+  function handleCheck(e: React.ChangeEvent<HTMLInputElement>) {
+    setQueryStatus(e.target.value);
+    setPageNumber(1);
+  }
 
   return (
     <div className="characters">
@@ -41,7 +39,6 @@ function Character() {
         <InputGroup className="mb-3">
           <InputGroup.Text id="basic-addon1">Character</InputGroup.Text>
           <Form.Control
-            /* value={query} */
             onChange={handleSearch}
             placeholder="Search"
             aria-label="Search"
@@ -90,7 +87,6 @@ function Character() {
           />
         </div>
       </Container>
-
       {data.length > 0 && (
         <Container>
           <Row>
@@ -118,18 +114,11 @@ function Character() {
           </Row>
         </Container>
       )}
-      {error === "There is nothing here" && (
+      {error && (
         <div>
           <em>No characters found...</em>
         </div>
       )}
-      {/* <div>
-        {`There is a problem fetching the characters - 🙅 🚫 `}
-        <strong>{`${error}`}</strong>
-        {` 🚫 🙅`}
-        <br />
-        <em>{`Not for production!`}</em>
-      </div> */}
     </div>
   );
 }
