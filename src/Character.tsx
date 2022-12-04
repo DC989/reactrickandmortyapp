@@ -1,13 +1,12 @@
 import { useState } from "react";
 import debounce from "lodash/debounce";
-
 import { v4 as uuidv4 } from "uuid";
+
 import InfiniteScroll from "react-infinite-scroll-component";
 
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 
@@ -18,28 +17,34 @@ import "./Character.css";
 function Character() {
   const [queryName, setQueryName] = useState("");
   const [queryStatus, setQueryStatus] = useState("");
-  const [pageNumber, setPageNumber] = useState(1);
 
-  const { loading, data, error, hasMore, setHasMore } = useFetchCharacters(
-    queryName,
-    queryStatus,
-    pageNumber
-  );
+  // destructuring the custom hook for fetching the data from the API and passing the state as parameters to the custom hook
+  const { loading, data, error, hasMore, setHasMore, setPageNumber } =
+    useFetchCharacters(queryName, queryStatus);
 
+  // putting the handleSearch function in a debounce function to prevent the function from being called too many times, on every keystroke
   const debouncedHandleSearch = debounce(handleSearch, 400);
 
+  // setting the handleSearch function to set the queryName state to the value of the input text field value
+  // resetting the pageNumber and hasMore state to their initial values
+  // this function is called when the user types in the input field
   function handleSearch(e: React.ChangeEvent<HTMLInputElement>) {
     setQueryName(e.target.value);
     setPageNumber(1);
     setHasMore(true);
   }
 
+  // setting the handleCheck function to set the queryStatus state to the value of the input check field value
+  // resetting the pageNumber and hasMore state to their initial values
+  // this function is called when the user checks the input field
   function handleCheck(e: React.ChangeEvent<HTMLInputElement>) {
     setQueryStatus(e.target.value);
     setPageNumber(1);
     setHasMore(true);
   }
 
+  // setting the nextPage function to update the pageNumber state by 1
+  // this function is called when the user scrolls down to the bottom of the page
   function nextPage() {
     setPageNumber((prevPageNumber) => prevPageNumber + 1);
   }
@@ -134,7 +139,7 @@ function Character() {
       )}
       {error && (
         <div>
-          <em>No characters found...</em>
+          <em>{error}</em>
         </div>
       )}
     </div>
